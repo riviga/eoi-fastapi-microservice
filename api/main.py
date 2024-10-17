@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-import router
+import farmacos
 import database
 from elasticapm.contrib.starlette import ElasticAPM, make_apm_client
 
@@ -35,7 +35,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(router.router)
+app.include_router(farmacos.router)
 
 # APM
 apm = make_apm_client({
