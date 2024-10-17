@@ -1,11 +1,11 @@
 services:
   api:
-    build: .
+    build: api
     container_name: api
     ports:
       - "8000:8000"
     volumes:
-      - .:/code
+      - ./api:/code
     depends_on:
       apm-server:
         condition: service_started
@@ -25,9 +25,9 @@ services:
       - .env      
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 1s
+      timeout: 1s
+      retries: 10
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
