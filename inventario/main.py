@@ -1,13 +1,16 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-import farmacos
-import database
+from fastapi.middleware.cors import CORSMiddleware
 from elasticapm.contrib.starlette import ElasticAPM, make_apm_client
+import farmacos
+import db_postgres
+import db_redis
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):       
     try:         
-        database.start()        
+        db_postgres.start()        
+        db_redis.start_consumer()
         print("FastAPI started", flush=True)
         yield
     finally:        
@@ -36,6 +39,14 @@ app = FastAPI(
 )
 
 app.include_router(farmacos.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # APM
 apm = make_apm_client({
