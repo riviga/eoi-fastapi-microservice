@@ -6,4 +6,4 @@ __pycache__
 .vscode
 .env
 data_redis
-inventario/data_postgres
+data_postgres

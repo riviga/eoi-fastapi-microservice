@@ -17,9 +17,9 @@ async def lifespan(app: FastAPI):
         print("FastAPI shutdown", flush=True)
 
 app = FastAPI(
-    description="Sencilla aplicación de gestión de inventario de fármacos",
+    description="Sencilla aplicación de gestión de pedidos de fármacos",
     version="0.1.0",
-    title="Máster EOI Digital Business - API REST Inventario fármacos",
+    title="Máster EOI Digital Business - API REST Pedidos fármacos",
     contact={
         "name": "Ricardo Vilchez",
         "url": "https://rickandmortyapi.com/",
@@ -50,7 +50,7 @@ app.add_middleware(
 
 # APM
 apm = make_apm_client({
-'SERVICE_NAME': 'fastapi-farmacos',
+'SERVICE_NAME': 'fastapi-pedidos',
 'DEBUG': True,
 'SERVER_URL': 'http://apm-server:8200',
 'CAPTURE_HEADERS': True,
