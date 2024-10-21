@@ -1,12 +1,13 @@
 import threading
 import time
 from redis import Redis
-from crud import get_farmaco_by_id_query, update_logic
+from crud import get_pedido_by_id_query, update_logic
 from models import PedidoDB
 
 redis = Redis(host="redis", port=6379, decode_responses=True) 
 
-key = 'order_refund'
+stream_order_completed = 'order_completed'
+stream_order_refund = 'order_refund'
 group = 'payment_group'
                 
 def start():
@@ -16,8 +17,8 @@ def start():
         
 def crea_grupo():
     try:
-        redis.xgroup_create(key, group, mkstream=True)
-        print (f"Consumer group {group} in stream {key} created", flush=True)     
+        redis.xgroup_create(stream_order_refund, group, mkstream=True)
+        print (f"Consumer group {group} in stream {stream_order_refund} created", flush=True)     
     except Exception as ex:
         print(f"Excepción creando grupo: {ex}", flush=True)        
 
@@ -29,7 +30,7 @@ class BackgroundTaskCheckRefund(threading.Thread):
     def run(self,*args,**kwargs):
         while True:
             try:        
-                results = redis.xreadgroup(group, key, {key: '>'}, None)
+                results = redis.xreadgroup(group, stream_order_refund, {stream_order_refund: '>'}, None)
                 if results != []:
                     print(f"results {results}", flush=True)
                     for result in results:
@@ -37,7 +38,7 @@ class BackgroundTaskCheckRefund(threading.Thread):
                         try:
                             print(f"Se recibe evento de obj {obj}", flush=True)
                             id = obj['id']
-                            query_pedido_by_id = get_farmaco_by_id_query(id)
+                            query_pedido_by_id = get_pedido_by_id_query(id)
                             nuevo_pedido: PedidoDB = query_pedido_by_id.first()        
                             nuevo_pedido.status = 'refunded'                            
                             pedido_dict = nuevo_pedido.to_dict()
@@ -47,7 +48,7 @@ class BackgroundTaskCheckRefund(threading.Thread):
                         except Exception as ex:
                             print(f"Excepción actualizando pedido ex {ex}", flush=True)                            
                 else:
-                    print(f"REDIS: No new events in {group}:{key}", flush=True)            
+                    print(f"REDIS: No new events in {group}:{stream_order_refund}", flush=True)            
             except Exception as e:
                 print(f"REDIS: Excepción consultando nuevos eventos ex:  {str(e)}", flush=True)    
             time.sleep(5)

@@ -1,21 +1,36 @@
 services:
-  api:    
+  inventario:    
     image: riviga77/eoi-fastapi-inventario
-    container_name: api
+    container_name: inventario
     ports:
-      - "8000:8000"    
+      - "8000:8000"
     depends_on:
       apm-server:
         condition: service_started
       postgres:
-        condition: service_healthy   
+        condition: service_healthy
+      redis:
+        condition: service_started
     env_file:
-      - .env           
+      - .env
+
+  pedidos:    
+    image: riviga77/eoi-fastapi-pedidos
+    container_name: pedidos
+    ports:
+      - "8001:8001"
+    depends_on:
+      apm-server:
+        condition: service_started      
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    env_file:
+      - .env     
 
   postgres:
     image: postgres:latest
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
     container_name: postgres    
     expose:
       - "5432:5432"      
@@ -50,5 +65,3 @@ services:
       - elasticsearch
       - kibana
 
-volumes:
-  postgres_data:     

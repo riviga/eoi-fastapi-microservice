@@ -1,11 +1,9 @@
 import time
 from fastapi import APIRouter, BackgroundTasks, Path, status
 from db_postgres import get_db
-from models import PedidoDB
 from schemas import PedidoNuevo, PedidoAlmacenado
-from sqlalchemy.orm import Session, Query
 import crud
-from db_redis import redis
+from db_redis import redis, stream_order_completed
 
 '''
 Métodos HTTP para realizar operaciones CRUD (Create Read Update Delete) sobre pedidos
@@ -27,18 +25,18 @@ def post(nuevo_pedido:PedidoNuevo, background_tasks: BackgroundTasks):
     background_tasks.add_task(order_completed, pedido_dict)
     return pedido_db
 
-
+# A los 5 segundos se considera el pedido finalizado, se actualiza el estado del pedido a 'completed' se produce un evento en el stream 'order_completed'
 def order_completed(pedido_dict: dict):
         db = next(get_db())
         time.sleep(5)
         id = pedido_dict["id"]
         print(f"Pasa periodo de gracia pedido {id}", flush=True)        
-        farmaco_id_query = crud.get_farmaco_by_id_query(id)
+        farmaco_id_query = crud.get_pedido_by_id_query(id)
         pedido_db = farmaco_id_query.first()
         pedido_db.status = 'completed'
         farmaco_id_query.update(pedido_dict, synchronize_session=False)
         db.commit()        
-        redis.xadd('order_completed', pedido_dict, '*')
+        redis.xadd(stream_order_completed, pedido_dict, '*')
         print(f"Pedido id {pedido_db.id} completado")
         
 

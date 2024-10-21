@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 POSTGRES_USER = os.getenv("POSTGRES_USER")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 POSTGRES_DB = os.getenv("POSTGRES_DB")
-DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres/{POSTGRES_DB}"
+DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres_inv/{POSTGRES_DB}"
 
 # SQLAlchemy
 engine = create_engine(DATABASE_URL)
@@ -16,7 +16,7 @@ Base = declarative_base()
 
 def start():        
     Base.metadata.create_all(bind=engine)
-    print("PostgresDB created", flush=True)
+    print("PostgresDB Inventario created", flush=True)
 
 
 def get_db():

@@ -6,6 +6,7 @@ import db_postgres
 import db_redis
 import router
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):       
     try:         
@@ -31,8 +32,8 @@ app = FastAPI(
     }, 
     openapi_tags= [ 
                     {
-                        "name": "farmacos",
-                        "description": "Operaciones sobre farmacos",
+                        "name": "pedidos",
+                        "description": "Operaciones sobre pedidos",
                     }                     
                 ],
     lifespan=lifespan
