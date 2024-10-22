@@ -6,4 +6,5 @@ __pycache__
 .vscode
 .env
 data_redis
-data_postgres_*
+data_postgres
+data_mongo

@@ -10,7 +10,7 @@ services:
     depends_on:
       apm-server:
         condition: service_started
-      postgres_inv:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_started
@@ -28,18 +28,18 @@ services:
     depends_on:
       apm-server:
         condition: service_started      
-      postgres_ped:
+      mongo:
         condition: service_healthy
       redis:
         condition: service_started
     env_file:
       - .env
 
-  postgres_inv:
+  postgres:
     image: postgres:latest
     volumes:
-      - ./data_postgres_inv:/var/lib/postgresql/data/
-    container_name: postgres_inv    
+      - ./data_postgres:/var/lib/postgresql/data/
+    container_name: postgres    
     expose:
       - "5432:5432"  
     env_file:
@@ -50,17 +50,15 @@ services:
       timeout: 1s
       retries: 10
 
-  postgres_ped:
-    image: postgres:latest
+  mongo:
+    image: mongo:latest    
+    container_name: mongo
+    ports:
+      - '27017:27017'
     volumes:
-      - ./data_postgres_ped:/var/lib/postgresql/data/
-    container_name: postgres_ped    
-    expose:
-      - "5432:5432"  
-    env_file:
-      - .env       
+      - ./data_mongo:/data/mongo
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 3s
       timeout: 1s
       retries: 10

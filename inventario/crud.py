@@ -45,8 +45,7 @@ def update(id: int, farmaco_dict: dict):
     return update_logic(farmaco_id_query, farmaco_dict)    
 
 
-def update_logic(farmaco_id_query: Query[FarmacoDB], farmaco_nuevo:dict):         
-    print(f"update farmaco_nuevo {farmaco_nuevo}")    
+def update_logic(farmaco_id_query: Query[FarmacoDB], farmaco_nuevo:dict):             
     farmaco_id_query.update(farmaco_nuevo, synchronize_session=False)
     db.commit()
     return farmaco_nuevo

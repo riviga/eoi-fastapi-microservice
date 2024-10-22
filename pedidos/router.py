@@ -1,9 +1,7 @@
-import time
-from fastapi import APIRouter, BackgroundTasks, Path, status
-from db_postgres import get_db
+from fastapi import APIRouter, Path, status
 from schemas import PedidoNuevo, PedidoAlmacenado
 import crud
-from db_redis import redis, stream_order_completed
+from db_redis import redis, stream_order_pending
 
 '''
 Métodos HTTP para realizar operaciones CRUD (Create Read Update Delete) sobre pedidos
@@ -17,29 +15,24 @@ def get_all():
     return crud.get_all()    
 
 
+@router.delete('', status_code=status.HTTP_204_NO_CONTENT, summary="Borra todos los pedidos")
+def delete():
+    return crud.delete_all()    
+
+
 @router.post('', response_model=PedidoAlmacenado, status_code=status.HTTP_201_CREATED, summary="Almacena un nuevo pedido")
-def post(nuevo_pedido:PedidoNuevo, background_tasks: BackgroundTasks):
-    pedido_dict = nuevo_pedido.model_dump()    
-    pedido_db = crud.save(pedido_dict)
-    pedido_dict["id"] = pedido_db.id
-    background_tasks.add_task(order_completed, pedido_dict)
-    return pedido_db
-
-# A los 5 segundos se considera el pedido finalizado, se actualiza el estado del pedido a 'completed' se produce un evento en el stream 'order_completed'
-def order_completed(pedido_dict: dict):
-        db = next(get_db())
-        time.sleep(5)
-        id = pedido_dict["id"]
-        print(f"Pasa periodo de gracia pedido {id}", flush=True)        
-        farmaco_id_query = crud.get_pedido_by_id_query(id)
-        pedido_db = farmaco_id_query.first()
-        pedido_db.status = 'completed'
-        farmaco_id_query.update(pedido_dict, synchronize_session=False)
-        db.commit()        
-        redis.xadd(stream_order_completed, pedido_dict, '*')
-        print(f"Pedido id {pedido_db.id} completado")
+def post(nuevo_pedido:PedidoNuevo):    
+    pedido_nuevo = crud.save(nuevo_pedido)  # state = pending    
+    response = redis.xadd(stream_order_pending, pedido_nuevo.model_dump(), '*')
+    print(f"Evento pedido id {pedido_nuevo.id} enviado a Redis {stream_order_pending} response {response}")
+    return pedido_nuevo
         
-
+        
 @router.get('/{id}', response_model=PedidoAlmacenado, status_code=status.HTTP_200_OK, summary="Obtiene un pedido a partir de su identificador")
-def get_id(id:int = Path(..., gt=0, description="Identificador del pedido", example="1")):
+def get_id(id:str = Path(..., min_length=1, description="Identificador del pedido", example="6717ae3823703a2307039bfa")):
     return crud.get_by_id(id)    
+
+
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT, summary="Borra un pedido")
+def delete(id:str = Path(..., min_length=1, description="Identificador del pedido", example="6717ae3823703a2307039bfa")):
+    return crud.delete(id)    

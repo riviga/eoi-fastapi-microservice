@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 POSTGRES_USER = os.getenv("POSTGRES_USER")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 POSTGRES_DB = os.getenv("POSTGRES_DB")
-DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres_inv/{POSTGRES_DB}"
+DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres/{POSTGRES_DB}"
 
 # SQLAlchemy
 engine = create_engine(DATABASE_URL)
@@ -25,5 +25,7 @@ def get_db():
         yield db
     finally:
         db.close()        
+        
+
 
     
