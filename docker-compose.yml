@@ -91,3 +91,17 @@ services:
     links:
       - elasticsearch
       - kibana 
+
+  web:
+    build: frontend
+    image: riviga77/eoi-fastapi-web
+    container_name: web
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+    depends_on:
+      pedidos:
+        condition: service_started            
+      inventario:
+        condition: service_started
