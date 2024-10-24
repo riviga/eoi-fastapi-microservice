@@ -9,6 +9,7 @@ redis = Redis(host="redis", port=6379, decode_responses=True)
 stream_order_pending = os.getenv("REDIS_STREAM_PENDING")
 stream_order_complete = os.getenv("REDIS_STREAM_COMPLETE")
 stream_order_refund = os.getenv("REDIS_STREAM_REFUND")
+delay = int(os.getenv("REDIS_DELAY_SECONDS", 5))
 group = 'payment_group'
                       
 
@@ -47,7 +48,7 @@ def backgroundTaskOrderRefund():
                 # print(f"REDIS: No new events in {group}:{stream_order_refund}", flush=True)            
         except Exception as e:
             print(f"REDIS: Excepción consultando nuevos eventos ex:  {str(e)}", flush=True)    
-        time.sleep(5) 
+        time.sleep(delay)
         
 
 def backgroundTaskOrderComplete():
@@ -75,7 +76,7 @@ def backgroundTaskOrderComplete():
             #     print(f"REDIS: No new events in {group}:{stream_order_complete}", flush=True)            
         except Exception as e:
             print(f"REDIS: Excepción consultando nuevos eventos ex:  {str(e)}", flush=True)    
-        time.sleep(5)
+        time.sleep(delay)
     
 
 def start_threads():
@@ -86,7 +87,7 @@ def start_threads():
         print("backgroundTaskOrderComplete started", flush=True)
         t2.start()          
         print("backgroundTaskOrderRefund started", flush=True)
-        print(f"Redis consumers started: {stream_order_pending} {stream_order_complete} {stream_order_refund}", flush=True)
+        print(f"Redis started streams [{stream_order_pending}, {stream_order_complete}, {stream_order_refund}] delay [{delay}]", flush=True)
     except Exception as ex:
         print(f"Excepción arranque hilos consumicion streams: {ex}", flush=True) 
     

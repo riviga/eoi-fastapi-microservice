@@ -11,6 +11,8 @@ redis = Redis(host="redis", port=6379, decode_responses=True)
 stream_order_pending = os.getenv("REDIS_STREAM_PENDING")
 stream_order_complete = os.getenv("REDIS_STREAM_COMPLETE")
 stream_order_refund = os.getenv("REDIS_STREAM_REFUND")
+delay = int(os.getenv("REDIS_DELAY_SECONDS", 5))
+
 group = 'inventory_group'     
 
 try:
@@ -64,7 +66,7 @@ class BackgroundTaskOrderPending(threading.Thread):
                 #     print(f"REDIS: No new events in {group}:{stream_order_pending}", flush=True)            
             except Exception as e:
                 print(f"REDIS: Excepción consultando nuevos eventos ex:  {str(e)}", flush=True)    
-            time.sleep(5)
+            time.sleep(delay)
             
             
 def refund(obj):    
@@ -92,4 +94,4 @@ except Exception as ex:
     print(f"Excepción start_consumer: {ex}", flush=True)      
     
 def say_hi():
-    print(f"Redis started streams {stream_order_pending} {stream_order_complete} {stream_order_refund}", flush=True)
+    print(f"Redis started streams [{stream_order_pending}, {stream_order_complete}, {stream_order_refund}] delay [{delay}]", flush=True)
