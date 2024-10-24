@@ -1,6 +1,5 @@
 services:
-  web:
-    build: frontend
+  web:    
     image: riviga77/eoi-fastapi-web
     container_name: web
     ports:
@@ -8,19 +7,16 @@ services:
     volumes:
       - ./frontend/src:/app/src
     depends_on:
-      pedidos:
-        condition: service_started            
       inventario:
         condition: service_started
-
-  inventario:
-    build: inventario
+      pedidos:
+        condition: service_started                  
+        
+  inventario:    
     image: riviga77/eoi-fastapi-inventario
     container_name: inventario
     ports:
-      - "8000:8000"
-    volumes:
-      - ./inventario:/code
+      - "8000:8000"    
     depends_on:
       apm-server:
         condition: service_started
@@ -32,13 +28,10 @@ services:
       - .env
 
   pedidos:
-    build: pedidos
     image: riviga77/eoi-fastapi-pedidos
     container_name: pedidos
     ports:
       - "8001:8001"
-    volumes:
-      - ./pedidos:/code
     depends_on:
       apm-server:
         condition: service_started      
