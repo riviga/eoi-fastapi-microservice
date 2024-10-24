@@ -55,7 +55,9 @@ app.add_middleware(
 apm = make_apm_client({
 'SERVICE_NAME': 'fastapi-pedidos',
 'DEBUG': True,
-'SERVER_URL': 'http://apm-server:8200',
+'SERVER_URL': 'https://99d3dc1c9c6a4587bceeb60ff53a396e.apm.us-central1.gcp.cloud.es.io',
+'SECRET_TOKEN': 'oEf3iQPk7wZQEMhrFU',
+'ENVIRONMENT': 'rvg-dev',
 'CAPTURE_HEADERS': True,
 'CAPTURE_BODY': 'all'
 })
