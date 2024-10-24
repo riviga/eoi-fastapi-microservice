@@ -12,12 +12,6 @@ services:
         condition: service_started            
       inventario:
         condition: service_started
-    environment:
-      - SERVICE_NAME=frontend
-      - DEBUG=True
-      - SERVER_URL=https://99d3dc1c9c6a4587bceeb60ff53a396e.apm.us-central1.gcp.cloud.es.io
-      - SECRET_TOKEN=oEf3iQPk7wZQEMhrFU
-      - ENVIRONMENT=rvg-dev
 
   inventario:
     build: inventario
