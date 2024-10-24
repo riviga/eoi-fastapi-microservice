@@ -30,8 +30,8 @@ def backgroundTaskOrderRefund():
     while True:
         try:        
             results = redis.xreadgroup(group, "my_consumer", {stream_order_refund: '>'}, count=10)            
-            if results != []:          
-                print(f"Results {results}", flush=True)        
+            if results != []:      
+                print(f"Read from {stream_order_refund}: {results}", flush=True)                            
                 eventos = [i for i in results[0][1]]
                 print(f"Nuevos eventos {stream_order_refund}: {len(eventos)}", flush=True)      
                 for evento in eventos:
@@ -59,7 +59,7 @@ def backgroundTaskOrderComplete():
         try:        
             results = redis.xreadgroup(group, stream_order_complete, {stream_order_complete: '>'}, count=10)
             if results != []:                          
-                print(f"Results {results}", flush=True)        
+                print(f"Read from {stream_order_complete}: {results}", flush=True)        
                 eventos = [i for i in results[0][1]]
                 print(f"Nuevos eventos {stream_order_complete}: {len(eventos)}", flush=True)                                                              
                 for evento in eventos:
