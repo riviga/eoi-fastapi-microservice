@@ -36,10 +36,8 @@ class BackgroundTaskOrderPending(threading.Thread):
                     print(f"Nuevos eventos {stream_order_complete}: {len(eventos)}", flush=True)                                                                                  
                     for evento in eventos:
                         print(f"Nuevo evento {stream_order_pending}: {evento}", flush=True)                                               
-                        message_id = evento[0]
-                        print(f"Message ID {message_id}", flush=True)                       
-                        redis.xack(stream_order_pending, group, message_id)
-                        print(f"Message ID {message_id} ACK", flush=True)                       
+                        message_id = evento[0]                                         
+                        redis.xack(stream_order_pending, group, message_id)                        
                         obj = evento[1]
                         try:
                             print(f"Nuevo evento en {stream_order_pending}: {obj}", flush=True)
