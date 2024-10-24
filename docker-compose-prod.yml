@@ -97,4 +97,4 @@ services:
       - elasticsearch
     links:
       - elasticsearch
-      - kibana shitless
+      - kibana
