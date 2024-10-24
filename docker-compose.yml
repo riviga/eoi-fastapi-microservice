@@ -22,8 +22,8 @@ services:
     volumes:
       - ./inventario:/code
     depends_on:
-      # apm-server:
-      #   condition: service_started
+      apm-server:
+        condition: service_started
       postgres:
         condition: service_healthy
       redis:
@@ -40,8 +40,8 @@ services:
     volumes:
       - ./pedidos:/code
     depends_on:
-      # apm-server:
-      #   condition: service_started      
+      apm-server:
+        condition: service_started      
       mongo:
         condition: service_healthy
       redis:
@@ -83,27 +83,27 @@ services:
     volumes:
       - ./data_redis:/data
 
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
-  #   container_name: elastic    
-  #   environment:
-  #     - discovery.type=single-node
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+    container_name: elastic    
+    environment:
+      - discovery.type=single-node
 
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.8.0
-  #   container_name: kibana
-  #   ports:
-  #     - "5601:5601"
-  #   links:
-  #     - elasticsearch
-  #   depends_on:
-  #     - elasticsearch
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.8.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
 
-  # apm-server:
-  #   image: docker.elastic.co/apm/apm-server:7.8.0
-  #   container_name: apm-server    
-  #   depends_on:
-  #     - elasticsearch
-  #   links:
-  #     - elasticsearch
-  #     - kibana 
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:7.8.0
+    container_name: apm-server    
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+      - kibana 
