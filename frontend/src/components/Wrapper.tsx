@@ -55,9 +55,18 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
                     <a
                       className="nav-link d-flex align-items-center gap-2 active"
                       aria-current="page"
-                      href="/orders"
+                      href="/new_order"
                     >
                       New order 
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link d-flex align-items-center gap-2 active"
+                      aria-current="page"
+                      href="/orders"
+                    >
+                      Orders
                     </a>
                   </li>
                 </ul>
